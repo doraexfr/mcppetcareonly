@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+sqlalchemy
+asyncpg
+pyjwt
+boto3
+celery
+redis
+fastmcp
