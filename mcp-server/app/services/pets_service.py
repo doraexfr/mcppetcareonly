@@ -46,7 +46,7 @@ class PetsService:
         }
 
     async def _raise_missing_or_forbidden(self, pet_id: int) -> None:
-        owner = await self.pets_repo.get_pet_own(pet_id)
+        owner = await self.pets_repo.get_pet_ownner_id(pet_id)
         if owner is None:
             raise NotFoundError("Pet not found")
         if owner["user_id"] is None:
