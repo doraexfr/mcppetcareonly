@@ -24,11 +24,11 @@ class PetsRepository:
                     p.pet_breast_girth,
                     p.pet_length,
                     p.pet_is_sterylyzed,
-                    p.pet_weight
+                    p.pet_weight,
                     p.pet_special_notes
                 FROM pets_info p
                 LEFT JOIN animals_breeds b ON b.id = p.animal_breed_id
-                WHERE p.pet_id = :pet_id AND p.user_id = :user_id
+                WHERE p.id = :pet_id AND p.user_id = :user_id
                 """
             ),
             {"pet_id": pet_id, "user_id": user_id},
@@ -47,9 +47,9 @@ class PetsRepository:
                     t.animal_name AS animal_type,
                     b.animal_breed,
                     p.pet_date_of_birth
-                FROM pet_info p
+                FROM pets_info p
                 LEFT JOIN animals_types t ON t.id = p.animal_type_id
-                LEFT JOIN animals_types t ON t.id = p.animal_type_id
+                LEFT JOIN animals_breeds b ON b.id = p.animal_breed_id
                 WHERE p.id = :pet_id AND p.user_id = :user_id
                 """
             ),
@@ -67,7 +67,7 @@ class PetsRepository:
 
     async def get_pet_owner_id(self, pet_id: int) -> Optional[Dict[str, Any]]:
         result = await self.db.execute(
-            text("SELECT user_id FROM pets_info WHERE pet_id = :pet_id"),
+            text("SELECT user_id FROM pets_info WHERE id = :pet_id"),
             {"pet_id": pet_id},
         )
         row = result.mappings().first()
