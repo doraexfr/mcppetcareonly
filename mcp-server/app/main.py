@@ -66,10 +66,10 @@ def create_app() -> FastAPI:
             "service": settings.APP_NAME,
         })
 
-    return app
-
     @app.get("/demo", include_in_schema=False)
 async def demo():
     return FileResponse("demo_orange.html")
+
+    return app
 
 app = create_app()
