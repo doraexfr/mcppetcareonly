@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PetCare</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Nunito+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #FFF8F2;
+    --surface: #FFFFFF;
+    --surface2: #FFF2E8;
+    --border: #F5DCC8;
+    --accent: #E8681A;
+    --accent2: #FF8C42;
+    --accent-light: #FFF0E6;
+    --text: #2C1810;
+    --text2: #8B6355;
+    --green: #4CAF50;
+    --red: #E53935;
+    --yellow: #FF9800;
+    --radius: 16px;
+    --shadow: 0 2px 12px rgba(232,104,26,0.1);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: 14px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  header {
+    background: var(--surface);
+    border-bottom: 2px solid var(--border);
+    padding: 0 28px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    box-shadow: var(--shadow);
+  }
+
+  .logo {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 22px;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .logo-paw { font-size: 24px; }
+
+  .status-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 5px 12px;
+    font-size: 12px;
+    color: var(--text2);
+  }
+
+  .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--red);
+    transition: background 0.3s;
+    flex-shrink: 0;
+  }
+  .dot.ok { background: var(--green); box-shadow: 0 0 6px rgba(76,175,80,0.5); }
+
+  .app {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    flex: 1;
+    height: calc(100vh - 60px);
+  }
+
+  .sidebar {
+    background: var(--surface);
+    border-right: 2px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+
+  .sidebar-block {
+    padding: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-label {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text2);
+    margin-bottom: 14px;
+  }
+
+  input, select {
+    background: var(--surface2);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    color: var(--text);
+    font-family: 'Nunito Sans', sans-serif;
+    font-size: 14px;
+    padding: 10px 14px;
+    width: 100%;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  input:focus { border-color: var(--accent2); }
+  input::placeholder { color: var(--text2); opacity: 0.6; }
+
+  .form-gap { display: flex; flex-direction: column; gap: 10px; }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    padding: 11px 18px;
+    transition: all 0.2s;
+    width: 100%;
+  }
+  .btn:hover { background: var(--accent2); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(232,104,26,0.3); }
+  .btn:active { transform: translateY(0); }
+  .btn.ghost {
+    background: transparent;
+    color: var(--accent);
+    border: 2px solid var(--border);
+  }
+  .btn.ghost:hover { border-color: var(--accent); background: var(--accent-light); box-shadow: none; }
+  .btn.small { padding: 7px 14px; font-size: 13px; width: auto; }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+
+  /* Pet cards */
+  .pet-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--surface2);
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: 8px;
+  }
+  .pet-card:last-child { margin-bottom: 0; }
+  .pet-card:hover { border-color: var(--accent2); }
+  .pet-card.active { border-color: var(--accent); background: var(--accent-light); }
+
+  .pet-emoji {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+  .pet-card.active .pet-emoji { border-color: var(--accent); }
+
+  .pet-card-name {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--text);
+    margin-bottom: 2px;
+  }
+  .pet-card-sub { font-size: 12px; color: var(--text2); }
+
+  /* Badge */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    font-family: 'Nunito', sans-serif;
+  }
+  .badge.green { background: #E8F5E9; color: #2E7D32; }
+  .badge.orange { background: #FFF3E0; color: #E65100; }
+  .badge.red { background: #FFEBEE; color: #C62828; }
+  .badge.blue { background: #E3F2FD; color: #1565C0; }
+
+  /* Main */
+  .main {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: var(--bg);
+  }
+
+  .tabs {
+    background: var(--surface);
+    border-bottom: 2px solid var(--border);
+    padding: 0 24px;
+    display: flex;
+    gap: 4px;
+  }
+
+  .tab {
+    padding: 16px 18px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--text2);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: -2px;
+  }
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  .content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px;
+  }
+
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* Welcome */
+  .welcome-card {
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 24px;
+    padding: 48px;
+    text-align: center;
+    max-width: 480px;
+    margin: 40px auto;
+    box-shadow: var(--shadow);
+  }
+
+  .welcome-paw { font-size: 64px; margin-bottom: 20px; }
+
+  .welcome-title {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 28px;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+
+  .welcome-sub {
+    color: var(--text2);
+    line-height: 1.7;
+    font-size: 14px;
+  }
+
+  .user-hint {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-top: 20px;
+  }
+
+  .hint-pill {
+    background: var(--accent-light);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 6px 16px;
+    font-size: 13px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 600;
+    color: var(--accent);
+  }
+
+  /* Pet detail */
+  .pet-header-card {
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 20px;
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow);
+  }
+
+  .pet-big-emoji {
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    background: var(--accent-light);
+    border: 3px solid var(--accent2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 38px;
+    flex-shrink: 0;
+  }
+
+  .pet-big-name {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 30px;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .pet-big-sub { color: var(--text2); font-size: 14px; margin-bottom: 10px; }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+    text-align: center;
+    box-shadow: var(--shadow);
+    transition: border-color 0.2s;
+  }
+  .stat-card:hover { border-color: var(--accent2); }
+
+  .stat-icon { font-size: 22px; margin-bottom: 6px; }
+
+  .stat-value {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 24px;
+    color: var(--accent);
+  }
+
+  .stat-label { font-size: 11px; color: var(--text2); margin-top: 2px; font-weight: 500; }
+
+  .notes-card {
+    background: var(--accent-light);
+    border: 2px solid var(--border);
+    border-left: 5px solid var(--accent2);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text2);
+    margin-bottom: 16px;
+    border-radius: 0 var(--radius) var(--radius) 0;
+  }
+
+  /* Clinics */
+  .search-bar {
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 20px;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    box-shadow: var(--shadow);
+  }
+  .search-bar input { flex: 1; background: var(--bg); }
+  .search-bar .btn { width: auto; }
+
+  .clinic-card {
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    box-shadow: var(--shadow);
+    transition: border-color 0.2s;
+  }
+  .clinic-card:hover { border-color: var(--accent2); }
+
+  .clinic-name {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    margin-bottom: 4px;
+  }
+  .clinic-info { font-size: 12px; color: var(--text2); line-height: 1.6; }
+  .clinic-phone { color: var(--accent); font-weight: 600; }
+
+  /* Docs */
+  .doc-card {
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 18px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    box-shadow: var(--shadow);
+  }
+
+  .doc-icon {
+    width: 42px; height: 42px;
+    border-radius: 12px;
+    background: #FFEBEE;
+    border: 2px solid #FFCDD2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+
+  .doc-name { font-family: 'Nunito', sans-serif; font-weight: 700; font-size: 14px; }
+  .doc-meta { font-size: 11px; color: var(--text2); margin-top: 3px; }
+
+  /* Chat */
+  .chat-wrap {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 160px);
+  }
+
+  .ctx-bar {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+
+  .ctx-chip {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 12px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    color: var(--text2);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .ctx-chip.on { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+  .ctx-chip:hover { border-color: var(--accent2); }
+
+  .chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding-right: 4px;
+  }
+
+  .msg { display: flex; gap: 10px; animation: pop 0.25s ease; }
+  .msg.user { flex-direction: row-reverse; }
+
+  @keyframes pop {
+    from { opacity: 0; transform: scale(0.96) translateY(6px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  .msg-av {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+    background: var(--surface);
+    border: 2px solid var(--border);
+  }
+  .msg.user .msg-av { background: var(--accent-light); border-color: var(--accent2); }
+
+  .msg-bub {
+    max-width: 72%;
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 18px;
+    border-bottom-left-radius: 6px;
+    padding: 12px 16px;
+    font-size: 14px;
+    line-height: 1.6;
+    box-shadow: var(--shadow);
+  }
+  .msg.user .msg-bub {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+    border-bottom-left-radius: 18px;
+    border-bottom-right-radius: 6px;
+  }
+
+  .typing { display: flex; gap: 5px; align-items: center; padding: 14px 18px; }
+  .typing-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--accent2);
+    animation: bounce 1s infinite;
+  }
+  .typing-dot:nth-child(2) { animation-delay: 0.15s; }
+  .typing-dot:nth-child(3) { animation-delay: 0.3s; }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); opacity: 0.4; }
+    50% { transform: translateY(-4px); opacity: 1; }
+  }
+
+  .chat-bottom {
+    padding-top: 16px;
+    border-top: 2px solid var(--border);
+    margin-top: 16px;
+    display: flex;
+    gap: 10px;
+  }
+  .chat-bottom input { flex: 1; }
+  .chat-bottom .btn { width: auto; padding: 10px 20px; }
+
+  /* Suggestions */
+  .suggestions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .sugg {
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 20px;
+    padding: 7px 14px;
+    font-size: 12px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 600;
+    color: var(--text2);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .sugg:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+
+  /* Alerts */
+  .alert {
+    background: #FFEBEE;
+    border: 2px solid #FFCDD2;
+    border-radius: var(--radius);
+    padding: 12px 16px;
+    font-size: 13px;
+    color: var(--red);
+    margin-bottom: 12px;
+  }
+  .alert.ok { background: #E8F5E9; border-color: #C8E6C9; color: #2E7D32; }
+
+  .empty-state {
+    text-align: center;
+    padding: 60px 24px;
+    color: var(--text2);
+  }
+  .empty-state .big { font-size: 52px; margin-bottom: 16px; }
+  .empty-state .title {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+
+  .loader {
+    width: 20px; height: 20px;
+    border: 3px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <span class="logo-paw">🐾</span> PetCare
+  </div>
+  <div style="display:flex;align-items:center;gap:12px">
+    <div class="status-pill">
+      <span class="dot" id="dot"></span>
+      <span id="statusTxt">Проверка...</span>
+    </div>
+    <span id="userChip" style="display:none;background:var(--accent-light);border:2px solid var(--border);border-radius:20px;padding:5px 14px;font-size:12px;font-family:Nunito,sans-serif;font-weight:700;color:var(--accent)"></span>
+  </div>
+</header>
+
+<div class="app">
+  <div class="sidebar">
+    <div class="sidebar-block" id="loginBlock">
+      <div class="section-label">Войти в аккаунт</div>
+      <div class="form-gap">
+        <input type="text" id="uid" placeholder="user_id (1, 2 или 3)" value="1">
+        <input type="password" id="pwd" placeholder="Пароль" value="petcare-demo-password">
+        <button class="btn" onclick="login()">🐶 Войти</button>
+      </div>
+      <div id="loginErr" style="margin-top:8px"></div>
+    </div>
+
+    <div class="sidebar-block" id="petsBlock" style="display:none">
+      <div class="section-label">Мои питомцы</div>
+      <div id="petListEl"><div style="color:var(--text2);font-size:13px">Загрузка...</div></div>
+    </div>
+
+    <div class="sidebar-block" id="logoutBlock" style="display:none">
+      <button class="btn ghost" onclick="logout()">Выйти</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="tabs" id="tabsEl" style="display:none">
+      <div class="tab active" id="t-pet" onclick="tab('pet')">🐾 Питомец</div>
+      <div class="tab" id="t-clinics" onclick="tab('clinics')">🏥 Клиники</div>
+      <div class="tab" id="t-docs" onclick="tab('docs')">📄 Документы</div>
+      <div class="tab" id="t-chat" onclick="tab('chat')">💬 Ассистент</div>
+    </div>
+
+    <div class="content">
+      <div class="panel active" id="p-welcome">
+        <div class="welcome-card">
+          <div class="welcome-paw">🐾</div>
+          <div class="welcome-title">Добро пожаловать!</div>
+          <div class="welcome-sub">
+            Войдите чтобы увидеть профили питомцев, найти клиники и пообщаться с ИИ-ассистентом
+          </div>
+          <div class="user-hint">
+            <span class="hint-pill">user 1 → Барни & Мия</span>
+            <span class="hint-pill">user 2 → Рич</span>
+            <span class="hint-pill">user 3 → Луна</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel" id="p-pet">
+        <div id="petDetail">
+          <div class="empty-state">
+            <div class="big">👈</div>
+            <div class="title">Выберите питомца</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel" id="p-clinics">
+        <div class="search-bar">
+          <input type="text" id="cityIn" placeholder="Город..." value="Ростов-на-Дону" style="border:none;background:transparent">
+          <button class="btn small" onclick="findClinics()">Найти</button>
+          <button class="btn ghost small" onclick="findOpen()">Открыты сейчас</button>
+        </div>
+        <div id="clinicRes">
+          <div class="empty-state"><div class="big">🏥</div><div class="title">Введите город</div></div>
+        </div>
+      </div>
+
+      <div class="panel" id="p-docs">
+        <div id="docsEl">
+          <div class="empty-state"><div class="big">📄</div><div class="title">Выберите питомца</div></div>
+        </div>
+      </div>
+
+      <div class="panel" id="p-chat">
+        <div class="chat-wrap">
+          <div class="ctx-bar">
+            <div class="ctx-chip on" id="cx-pet" onclick="toggleCtx('pet')">🐾 Профиль питомца</div>
+            <div class="ctx-chip" id="cx-city" onclick="toggleCtx('city')">📍 Клиники города</div>
+            <div class="ctx-chip" id="cx-docs" onclick="toggleCtx('docs')">📄 Документы</div>
+          </div>
+          <div class="suggestions" id="suggEl">
+            <div class="sugg" onclick="suggest(this)">Плохо ест второй день 😟</div>
+            <div class="sugg" onclick="suggest(this)">Нужна ли прививка?</div>
+            <div class="sugg" onclick="suggest(this)">Какой нужен корм?</div>
+            <div class="sugg" onclick="suggest(this)">Найди ближайшую клинику</div>
+          </div>
+          <div class="chat-messages" id="msgs">
+            <div class="msg">
+              <div class="msg-av">🤖</div>
+              <div class="msg-bub">Привет! Я ИИ-ассистент PetCare 🐾 Выберите питомца и задайте вопрос — отвечу с учётом его профиля!</div>
+            </div>
+          </div>
+          <div class="chat-bottom">
+            <input type="text" id="chatIn" placeholder="Задайте вопрос о вашем питомце..." onkeydown="if(event.key==='Enter')send()">
+            <button class="btn" onclick="send()" id="sendBtn">Отправить 🐾</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const API = '';
+let token = null, uid = null, petId = null, petName = '';
+let ctx = { pet: true, city: false, docs: false };
+
+async function checkHealth() {
+  try {
+    const r = await fetch(API + '/health');
+    const d = await r.json();
+    const ok = d.status === 'ok';
+    document.getElementById('dot').className = 'dot' + (ok ? ' ok' : '');
+    document.getElementById('statusTxt').textContent = ok ? 'Всё работает' : 'БД недоступна';
+  } catch { document.getElementById('statusTxt').textContent = 'Нет соединения'; }
+}
+
+async function login() {
+  const u = document.getElementById('uid').value.trim();
+  const p = document.getElementById('pwd').value;
+  const err = document.getElementById('loginErr');
+  if (!u) { err.innerHTML = '<div class="alert">Введите user_id</div>'; return; }
+  try {
+    const r = await fetch(API + '/auth/login', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({user_id: u, password: p}) });
+    const d = await r.json();
+    if (!r.ok || d.error) { err.innerHTML = `<div class="alert">${d.error?.message || 'Ошибка входа'}</div>`; return; }
+    token = d.data?.token || d.token;
+    uid = u;
+    err.innerHTML = '';
+    document.getElementById('userChip').textContent = '👤 user ' + u;
+    document.getElementById('userChip').style.display = 'inline';
+    document.getElementById('tabsEl').style.display = 'flex';
+    document.getElementById('petsBlock').style.display = 'block';
+    document.getElementById('logoutBlock').style.display = 'block';
+    document.getElementById('p-welcome').classList.remove('active');
+    await loadPets();
+  } catch(e) { err.innerHTML = `<div class="alert">Ошибка: ${e.message}</div>`; }
+}
+
+function logout() {
+  token = null; uid = null; petId = null;
+  document.getElementById('userChip').style.display = 'none';
+  document.getElementById('tabsEl').style.display = 'none';
+  document.getElementById('petsBlock').style.display = 'none';
+  document.getElementById('logoutBlock').style.display = 'none';
+  document.getElementById('petListEl').innerHTML = '';
+  document.getElementById('p-welcome').classList.add('active');
+  document.querySelectorAll('.panel').forEach(p => { if(p.id !== 'p-welcome') p.classList.remove('active'); });
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+}
+
+async function loadPets() {
+  const el = document.getElementById('petListEl');
+  el.innerHTML = '<div class="loader" style="margin:8px auto"></div>';
+  const pets = [];
+  for (let i = 1; i <= 5; i++) {
+    try {
+      const r = await fetch(API + `/mcp/pets/${i}/short`, { headers: {'Authorization':'Bearer '+token} });
+      if (r.ok) { const d = await r.json(); if (d.data) pets.push({id: i, ...d.data}); }
+    } catch {}
+  }
+  if (!pets.length) { el.innerHTML = '<div style="color:var(--text2);font-size:13px">Питомцы не найдены</div>'; return; }
+  el.innerHTML = pets.map(p => {
+    const em = (p.animal_breed || '').toLowerCase().includes('кош') || (p.animal_breed || '').toLowerCase().includes('бритт') || (p.animal_type || '').toLowerCase().includes('кошк') ? '🐱' : '🐶';
+    return `<div class="pet-card" id="pc-${p.id}" onclick="selectPet(${p.id},'${p.pet_name}')">
+      <div class="pet-emoji">${em}</div>
+      <div>
+        <div class="pet-card-name">${p.pet_name}</div>
+        <div class="pet-card-sub">${p.animal_breed || p.animal_type || ''}</div>
+        <div style="margin-top:5px"><span class="badge orange">${p.age ?? '?'} лет</span></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function selectPet(id, name) {
+  petId = id; petName = name;
+  document.querySelectorAll('.pet-card').forEach(c => c.classList.remove('active'));
+  document.getElementById('pc-'+id)?.classList.add('active');
+  tab('pet');
+  await Promise.all([loadPetDetail(id), loadDocs(id)]);
+}
+
+async function loadPetDetail(id) {
+  const el = document.getElementById('petDetail');
+  el.innerHTML = '<div style="text-align:center;padding:40px"><div class="loader" style="margin:auto"></div></div>';
+  try {
+    const r = await fetch(API + `/mcp/pets/${id}/details`, { headers: {'Authorization':'Bearer '+token} });
+    const d = await r.json();
+    if (!r.ok || d.error) { el.innerHTML = `<div class="alert">${d.error?.message || 'Ошибка'}</div>`; return; }
+    const p = d.data;
+    const em = (p.animal_breed || '').toLowerCase().includes('кош') || (p.animal_breed || '').toLowerCase().includes('бритт') ? '🐱' : '🐶';
+    const sterile = p.pet_is_sterylyzed === true ? '<span class="badge green">✓ Стерилизован</span>' : p.pet_is_sterylyzed === false ? '<span class="badge orange">Не стерилизован</span>' : '<span class="badge blue">Не указано</span>';
+    el.innerHTML = `
+      <div class="pet-header-card">
+        <div class="pet-big-emoji">${em}</div>
+        <div>
+          <div class="pet-big-name">${p.pet_name}</div>
+          <div class="pet-big-sub">${p.animal_breed || 'Порода не указана'} · ${p.pet_sex === 'male' ? '♂ Самец' : '♀ Самка'}</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">${sterile}${p.pedigree ? '<span class="badge blue">📜 Родословная</span>' : ''}</div>
+        </div>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-icon">🎂</div><div class="stat-value">${p.age ?? '—'}</div><div class="stat-label">лет</div></div>
+        <div class="stat-card"><div class="stat-icon">⚖️</div><div class="stat-value">${p.pet_weight ?? '—'}</div><div class="stat-label">кг</div></div>
+        <div class="stat-card"><div class="stat-icon">📏</div><div class="stat-value">${p.pet_length ?? '—'}</div><div class="stat-label">см длина</div></div>
+        ${p.pet_neck_girth ? `<div class="stat-card"><div class="stat-icon">🦴</div><div class="stat-value">${p.pet_neck_girth}</div><div class="stat-label">см шея</div></div>` : ''}
+        ${p.pet_breast_girth ? `<div class="stat-card"><div class="stat-icon">💪</div><div class="stat-value">${p.pet_breast_girth}</div><div class="stat-label">см грудь</div></div>` : ''}
+      </div>
+      ${p.pet_special_notes ? `<div class="notes-card">📝 ${p.pet_special_notes}</div>` : ''}
+      <button class="btn" style="width:auto" onclick="tab('chat')">💬 Спросить про ${p.pet_name}</button>
+    `;
+  } catch(e) { el.innerHTML = `<div class="alert">Ошибка: ${e.message}</div>`; }
+}
+
+async function findClinics() {
+  const city = document.getElementById('cityIn').value.trim();
+  const el = document.getElementById('clinicRes');
+  el.innerHTML = '<div style="text-align:center;padding:40px"><div class="loader" style="margin:auto"></div></div>';
+  try {
+    const r = await fetch(API + `/mcp/clinics/city?vet_city=${encodeURIComponent(city)}`, { headers: {'Authorization':'Bearer '+token} });
+    const d = await r.json();
+    renderClinics(d.data || [], el);
+  } catch(e) { el.innerHTML = `<div class="alert">Ошибка: ${e.message}</div>`; }
+}
+
+async function findOpen() {
+  const city = document.getElementById('cityIn').value.trim() || 'Ростов-на-Дону';
+  const el = document.getElementById('clinicRes');
+  el.innerHTML = '<div style="text-align:center;padding:40px"><div class="loader" style="margin:auto"></div></div>';
+  try {
+    const r = await fetch(API + '/mcp/clinics/filter-available', { method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+token}, body: JSON.stringify({vet_city: city}) });
+    const d = await r.json();
+    renderClinics(d.data || [], el, true);
+  } catch(e) { el.innerHTML = `<div class="alert">Ошибка: ${e.message}</div>`; }
+}
+
+function renderClinics(list, el, openOnly = false) {
+  if (!list.length) { el.innerHTML = '<div class="empty-state"><div class="big">🏥</div><div class="title">Клиники не найдены</div></div>'; return; }
+  el.innerHTML = (openOnly ? '<div class="alert ok">✓ Показаны только клиники, открытые прямо сейчас</div>' : '') +
+    list.map(c => `<div class="clinic-card">
+      <div>
+        <div class="clinic-name">🏥 ${c.vet_name}</div>
+        <div class="clinic-info">📍 ${c.vet_street}, ${c.vet_building_number}<br>${c.vet_phone ? `<span class="clinic-phone">📞 ${c.vet_phone}</span>` : ''}${c.vet_website ? ` · <a href="${c.vet_website}" target="_blank" style="color:var(--accent)">сайт</a>` : ''}</div>
+      </div>
+      <div>${c.vet_is_24_7 ? '<span class="badge green">🕐 24/7</span>' : `<span class="badge orange">🕐 ${c.vet_working_hours || '—'}</span>`}</div>
+    </div>`).join('');
+}
+
+async function loadDocs(id) {
+  const el = document.getElementById('docsEl');
+  try {
+    const r = await fetch(API + `/mcp/pets/${id}/documents`, { headers: {'Authorization':'Bearer '+token} });
+    const d = await r.json();
+    const docs = d.data || [];
+    if (!docs.length) { el.innerHTML = '<div class="empty-state"><div class="big">📄</div><div class="title">Документов нет</div></div>'; return; }
+    el.innerHTML = `<div style="font-family:Nunito,sans-serif;font-weight:700;font-size:13px;color:var(--text2);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:14px">Документы: ${petName}</div>` +
+      docs.map(doc => `<div class="doc-card"><div class="doc-icon">📋</div><div><div class="doc-name">${doc.custom_name}</div><div class="doc-meta">${doc.document_type || 'Документ'} · ${fmtDate(doc.uploaded_at)} · ${fmtSize(doc.size_bytes)}</div></div></div>`).join('');
+  } catch { el.innerHTML = '<div class="alert">Ошибка загрузки документов</div>'; }
+}
+
+function toggleCtx(k) {
+  ctx[k] = !ctx[k];
+  document.getElementById('cx-'+k).classList.toggle('on', ctx[k]);
+}
+
+function suggest(el) {
+  document.getElementById('chatIn').value = el.textContent.trim();
+  document.getElementById('chatIn').focus();
+}
+
+async function send() {
+  const input = document.getElementById('chatIn');
+  const q = input.value.trim();
+  if (!q || !token) return;
+  addMsg(q, 'user');
+  input.value = '';
+  document.getElementById('sendBtn').disabled = true;
+  const lid = addTyping();
+  try {
+    const payload = {
+      tool: 'assistant', method: 'ask_petcare_assistant',
+      payload: {
+        question: q,
+        ...(ctx.pet && petId ? { pet_id: petId, user_id: uid } : {}),
+        ...(ctx.city ? { vet_city: document.getElementById('cityIn').value || 'Ростов-на-Дону' } : {}),
+        include_documents: ctx.docs,
+      }
+    };
+    const r = await fetch(API + '/mcp/execute', { method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+token}, body: JSON.stringify(payload) });
+    const d = await r.json();
+    rmTyping(lid);
+    addMsg(d.error ? '⚠️ ' + (d.error.message || 'Ошибка') : (d.data?.answer || d.data?.response || JSON.stringify(d.data)), 'bot');
+  } catch(e) { rmTyping(lid); addMsg('⚠️ Ошибка: ' + e.message, 'bot'); }
+  document.getElementById('sendBtn').disabled = false;
+}
+
+function addMsg(text, role) {
+  const el = document.getElementById('msgs');
+  const d = document.createElement('div');
+  d.className = 'msg' + (role === 'user' ? ' user' : '');
+  d.innerHTML = `<div class="msg-av">${role === 'user' ? '👤' : '🤖'}</div><div class="msg-bub">${text.replace(/\n/g,'<br>')}</div>`;
+  el.appendChild(d);
+  el.scrollTop = el.scrollHeight;
+}
+
+let lc = 0;
+function addTyping() {
+  const id = 'ty-'+(++lc), el = document.getElementById('msgs');
+  const d = document.createElement('div'); d.className = 'msg'; d.id = id;
+  d.innerHTML = `<div class="msg-av">🤖</div><div class="msg-bub typing"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>`;
+  el.appendChild(d); el.scrollTop = el.scrollHeight; return id;
+}
+function rmTyping(id) { document.getElementById(id)?.remove(); }
+
+function tab(name) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('p-'+name)?.classList.add('active');
+  document.getElementById('t-'+name)?.classList.add('active');
+}
+
+function fmtDate(s) { return s ? new Date(s).toLocaleDateString('ru-RU') : ''; }
+function fmtSize(b) { return b ? (b > 1048576 ? (b/1048576).toFixed(1)+' МБ' : Math.round(b/1024)+' КБ') : ''; }
+
+checkHealth();
+setInterval(checkHealth, 30000);
+</script>
+</body>
+</html>
