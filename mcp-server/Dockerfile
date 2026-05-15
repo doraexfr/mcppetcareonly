@@ -9,6 +9,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY app ./app
+COPY demo_orange.html ./demo_orange.html
 COPY docker/init.sql ./init.sql
 
 EXPOSE 8000
