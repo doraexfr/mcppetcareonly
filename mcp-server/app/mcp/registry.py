@@ -42,19 +42,27 @@ class ToolRegistry:
 
 
 def build_tool_registry(db: AsyncSession) -> ToolRegistry:
+    import logging
+    logger = logging.getLogger(__name__)
+    
     registry = ToolRegistry()
     dependencies = ToolDependencies(
         db=db,
         storage_client=S3StorageClient(),
         pets_repo=PetsRepository(db),
     )
-
     for module_info in pkgutil.iter_modules(tools_package.__path__):
         module_name = f"{tools_package.__name__}.{module_info.name}.tool"
-        module = importlib.import_module(module_name)
-        factory = getattr(module, "create_tool", None)
-        if factory is None or not callable(factory):
-            continue
-        registry.register(factory(dependencies))
-
+        try:
+            module = importlib.import_module(module_name)
+            factory = getattr(module, "create_tool", None)
+            if factory is None or not callable(factory):
+                logger.warning("No create_tool in %s", module_name)
+                continue
+            registry.register(factory(dependencies))
+            logger.info("Registered tool: %s", module_name)
+        except Exception as e:
+            logger.error("Failed to load tool %s: %s", module_name, e, exc_info=True)
+    
+    logger.info("Registered tools: %s", registry.list_tools())
     return registry
