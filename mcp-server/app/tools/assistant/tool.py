@@ -1,6 +1,9 @@
 from typing import Any, Dict
 
-from app.mcp.registry import ToolDependencies
+from __future__ import annotations
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from app.mcp.registry import ToolDependencies
 from app.repository.clinics_repo import ClinicsRepository
 from app.repository.documents_repo import DocumentsRepository
 from app.services.assistant_service import AssistantService
