@@ -41,7 +41,7 @@ class PetsRepository:
             text(
                 """
                 SELECT
-                    p.id AS pet_id
+                    p.id AS pet_id,
                     p.user_id,
                     p.pet_name,
                     t.animal_name AS animal_type,
