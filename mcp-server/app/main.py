@@ -67,8 +67,8 @@ def create_app() -> FastAPI:
         })
 
     @app.get("/demo", include_in_schema=False)
-async def demo():
-    return FileResponse("demo_orange.html")
+    async def demo():
+        return FileResponse("demo_orange.html")
 
     return app
 
