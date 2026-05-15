@@ -1,6 +1,7 @@
 import logging
 
 from fastapi import FastAPI
+from fastapi.responses import FileResponse
 from fastapi.responses import JSONResponse
 from sqlalchemy import text
 
@@ -67,5 +68,8 @@ def create_app() -> FastAPI:
 
     return app
 
+    @app.get("/demo", include_in_schema=False)
+async def demo():
+    return FileResponse("demo_orange.html")
 
 app = create_app()
